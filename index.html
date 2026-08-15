@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LittleFrogLPT · 五大亮点</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --ink: #1a2233;
+    --sub: #6b7280;
+    --accent: #2f6fed;
+    --accent-soft: #e8eefc;
+    --line: #e5e8f0;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 顶部标题栏 ===== */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+  .brand .logo {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+  }
+  .counter { font-size: 13px; color: var(--sub); letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+
+  /* ===== 幻灯片容器 ===== */
+  .viewport { position: fixed; inset: 0; }
+  .track {
+    display: flex; height: 100%;
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+  }
+  .slide {
+    flex: 0 0 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 60px;
+  }
+  .inner { max-width: 760px; width: 100%; }
+
+  .num {
+    font-size: 96px; font-weight: 800; line-height: 1;
+    color: var(--accent-soft); user-select: none;
+    margin-bottom: 12px;
+  }
+  .title {
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 800; letter-spacing: 1px;
+    margin-bottom: 22px; line-height: 1.25;
+  }
+  .desc {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--sub); line-height: 1.9;
+    max-width: 620px;
+  }
+  .desc b { color: var(--ink); font-weight: 600; }
+
+  .download-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 34px; padding: 16px 44px;
+    background: var(--accent); color: #fff;
+    font-size: 17px; font-weight: 700; text-decoration: none;
+    border-radius: 999px; box-shadow: 0 8px 24px rgba(47, 111, 237, .25);
+    transition: all .25s ease;
+  }
+  .download-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(47, 111, 237, .35); }
+  .download-btn:active { transform: translateY(-1px) scale(.97); }
+  .tag {
+    display: inline-block; margin-top: 26px;
+    padding: 7px 16px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 13px; font-weight: 600;
+  }
+
+  /* 动画：进入时 */
+  .slide .num, .slide .title, .slide .desc, .slide .tag,
+  .slide .download-btn { opacity: 0; }
+  .slide.active .num { animation: rise .6s .05s ease forwards; }
+  .slide.active .title { animation: rise .6s .15s ease forwards; }
+  .slide.active .desc { animation: rise .6s .28s ease forwards; }
+  .slide.active .tag { animation: rise .6s .40s ease forwards; }
+  .slide.active .download-btn { animation: rise .6s .45s ease forwards; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== 底部控制 ===== */
+  .controls {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 40px;
+  }
+  .dots { display: flex; gap: 10px; }
+  .dot {
+    width: 9px; height: 9px; border-radius: 99px;
+    background: var(--line); cursor: pointer; transition: all .35s ease;
+  }
+  .dot.active { width: 28px; background: var(--accent); }
+
+  .arrow {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 17px; color: var(--ink);
+    transition: all .2s ease; user-select: none;
+  }
+  .arrow:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .arrow:active { transform: scale(.95); }
+  .arrow.disabled { opacity: .25; pointer-events: none; }
+  .arrow-group { display: flex; gap: 12px; }
+
+  .hint {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: 96px; z-index: 50;
+    font-size: 12px; color: #9ca3af; letter-spacing: 2px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 640px) {
+    .topbar, .controls { padding: 16px 22px; }
+    .slide { padding: 0 30px; }
+    .num { font-size: 64px; }
+    .desc { line-height: 1.8; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 顶部 -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">L</div>
+      <span>LittleFrogLPT</span>
+    </div>
+    <div class="counter"><span id="now">01</span> / 05</div>
+  </header>
+
+  <!-- 幻灯片 -->
+  <div class="viewport" id="viewport">
+    <div class="track" id="track">
+
+      <section class="slide">
+        <div class="inner">
+          <div class="num">01</div>
+          <h1 class="title">自研 LPT 编码格式</h1>
+          <p class="desc">将文本逐字转为 <b>Unicode 码点</b>，以逗号分隔写入 <b>.lpt</b> 文件，自创一套轻量的文本存储格式。</p>
+          <span class="tag">独创格式 · 自定义扩展名</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="inner">
+          <div class="num">02</div>
+          <h1 class="title">创建查看双模式</h1>
+          <p class="desc">启动后自由选择<b>「创建模式」写入</b>或<b>「查看模式」还原</b>，一次启动，读写兼备。</p>
+          <span class="tag">模式化设计 · 功能清晰</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="inner">
+          <div class="num">03</div>
+          <h1 class="title">中文全字符无损</h1>
+          <p class="desc">基于 <b>ord / chr</b> 双向转换，中文、英文、符号、生僻字均可<b>无损编码、精确还原</b>。</p>
+          <span class="tag">Unicode 全覆盖 · 零失真</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="inner">
+          <div class="num">04</div>
+          <h1 class="title">异常处理全覆盖</h1>
+          <p class="desc">空内容、文件缺失、格式错误、模式输错——<b>每种异常都有明确提示</b>，程序始终不崩溃。</p>
+          <span class="tag">健壮容错 · 体验友好</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="inner">
+          <div class="num">⬇</div>
+          <h1 class="title" style="font-size: clamp(30px, 4.5vw, 48px);">下载安装包</h1>
+          <p class="desc">点击下方按钮即可下载软件。</p>
+          <a class="download-btn" id="downloadBtn" href="LittleFrogLPT_Setup.exe" download>⬇ 下载安装包</a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- 滑动提示 -->
+  <div class="hint">← 滑动 / 拖拽 →</div>
+
+  <!-- 底部控制 -->
+  <footer class="controls">
+    <div class="dots" id="dots"></div>
+    <div class="arrow-group">
+      <div class="arrow" id="prev">←</div>
+      <div class="arrow" id="next">→</div>
+    </div>
+  </footer>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const track = document.getElementById('track');
+  const dotsBox = document.getElementById('dots');
+  const now = document.getElementById('now');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const viewport = document.getElementById('viewport');
+
+  let index = 0;
+  const total = slides.length;
+
+  // 生成圆点
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsBox.appendChild(d);
+  }
+  const dots = dotsBox.children;
+
+  function go(i) {
+    index = Math.max(0, Math.min(total - 1, i));
+    track.style.transform = `translateX(-${index * 100}%)`;
+    slides.forEach((s, k) => s.classList.toggle('active', k === index));
+    dots.forEach((d, k) => d.classList.toggle('active', k === index));
+    now.textContent = String(index + 1).padStart(2, '0');
+    prev.classList.toggle('disabled', index === 0);
+    next.classList.toggle('disabled', index === total - 1);
+  }
+
+  prev.addEventListener('click', () => go(index - 1));
+  next.addEventListener('click', () => go(index + 1));
+
+  // 键盘
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') go(index + 1);
+    if (e.key === 'ArrowLeft') go(index - 1);
+  });
+
+  // 触摸 / 鼠标拖拽滑动
+  let startX = 0, dragging = false;
+  viewport.addEventListener('mousedown', e => { startX = e.clientX; dragging = true; });
+  viewport.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const diff = e.clientX - startX;
+    if (Math.abs(diff) > 70) { dragging = false; go(diff < 0 ? index + 1 : index - 1); }
+  });
+  viewport.addEventListener('mouseup', () => dragging = false);
+  viewport.addEventListener('mouseleave', () => dragging = false);
+
+  viewport.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  viewport.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 70) go(diff < 0 ? index + 1 : index - 1);
+  }, { passive: true });
+
+  // 初始化
+  go(0);
+
+  // ===== 下载按钮：安装包就绪检测 =====
+  const downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.addEventListener('click', e => {
+    e.preventDefault();
+    fetch(downloadBtn.getAttribute('href'), { method: 'HEAD', cache: 'no-store' })
+      .then(res => {
+        if (res.ok) {
+          window.location.href = downloadBtn.getAttribute('href');
+        } else {
+          alert('安装包尚未就绪：请将 LittleFrogLPT_Setup.exe 放入本网页同目录后重试。');
+        }
+      })
+      .catch(() => alert('安装包尚未就绪：请将 LittleFrogLPT_Setup.exe 放入本网页同目录后重试。'));
+  });
+</script>
+</body>
+</html>
